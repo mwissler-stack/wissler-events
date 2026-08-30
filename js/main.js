@@ -73,7 +73,7 @@
       var updateFocus = function () {
         var vh = window.innerHeight;
         var center = vh / 2;
-        var threshold = vh * 0.58;
+        var threshold = vh * 0.42;
 
         // Read phase: measure all cards first to avoid layout thrashing.
         var rects = cardList.map(function (card) {
