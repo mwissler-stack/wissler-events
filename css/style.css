@@ -379,6 +379,72 @@ p {
   color: var(--text-muted);
 }
 
+/* ------------------------------- Home hero --------------------------------- */
+/* Minimal title-card hero: name, tagline, three buttons. No stats, no badge. */
+
+.home-hero {
+  position: relative;
+  text-align: center;
+  padding: var(--sp-8) 0 var(--sp-7);
+  overflow: hidden;
+}
+
+.home-hero::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 900px;
+  background: radial-gradient(circle, var(--accent-soft) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+.home-hero .eyebrow {
+  position: relative;
+  z-index: 1;
+  justify-content: center;
+}
+
+.home-title {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(2.8rem, 8vw, 5.6rem);
+  margin: var(--sp-3) 0 0;
+}
+
+.home-title em {
+  color: var(--text);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.home-subtitle {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: var(--sp-3);
+}
+
+.home-tagline {
+  position: relative;
+  z-index: 1;
+  margin: var(--sp-4) auto var(--sp-5);
+  max-width: 44ch;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.home-hero .btn-row {
+  position: relative;
+  z-index: 1;
+  justify-content: center;
+}
+
 /* ---------------------------- Credential badge ---------------------------- */
 /* The signature element: an all-access event laminate. */
 
@@ -822,6 +888,140 @@ p {
 
 .sheet-row.is-hidden {
   display: none;
+}
+
+/* ---------------------------- Scroll-reveal projects ------------------------- */
+/* Each project grows toward the viewport center as you scroll, revealing a
+   media frame, then recedes back to compact text as it passes. Driven by a
+   --focus custom property (0–1) set in JS from scroll position. */
+
+.reveal-list {
+  margin-top: var(--sp-2);
+}
+
+.reveal-project {
+  height: 72vh;
+  min-height: 420px;
+  max-height: 720px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-bottom: 1px solid var(--line);
+}
+
+.reveal-project:last-child {
+  border-bottom: none;
+}
+
+.reveal-project.is-hidden {
+  display: none;
+}
+
+.rp-inner {
+  text-align: center;
+  max-width: 720px;
+  padding: 0 var(--sp-3);
+  transform: scale(calc(0.72 + var(--focus, 0) * 0.28));
+  transition: transform 0.12s ease-out;
+}
+
+.rp-index {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--text-faint);
+  opacity: calc(0.5 + var(--focus, 0) * 0.5);
+}
+
+.rp-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.5rem, 4vw, 2.6rem);
+  margin: var(--sp-1) 0 0;
+  color: var(--text);
+}
+
+.rp-meta {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  margin-top: var(--sp-2);
+  opacity: calc(0.55 + var(--focus, 0) * 0.45);
+}
+
+.rp-meta .rp-role {
+  color: var(--accent);
+}
+
+.rp-media {
+  margin: var(--sp-4) auto 0;
+  width: min(560px, calc(260px + var(--focus, 0) * 360px));
+  max-width: 88vw;
+  aspect-ratio: 16 / 10;
+  border-radius: 8px;
+  overflow: hidden;
+  opacity: var(--focus, 0);
+  transition: opacity 0.15s ease-out;
+  position: relative;
+}
+
+.rp-media-fill {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+}
+
+.rp-media-fill svg {
+  width: 30px;
+  height: 30px;
+  opacity: 0.5;
+}
+
+.rp-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rp-media.variant-a .rp-media-fill {
+  background: radial-gradient(circle at 30% 22%, rgba(217, 161, 76, 0.28), transparent 60%), linear-gradient(160deg, #1b1a1d, #0a0a0b);
+}
+
+.rp-media.variant-b .rp-media-fill {
+  background: radial-gradient(circle at 72% 80%, rgba(217, 161, 76, 0.22), transparent 55%), linear-gradient(205deg, #17161a, #0a0a0b);
+}
+
+.rp-media.variant-c .rp-media-fill {
+  background: radial-gradient(circle at 50% 50%, rgba(217, 161, 76, 0.2), transparent 65%), linear-gradient(120deg, #141316, #0a0a0b);
+}
+
+/* Reduced motion / no-JS fallback: compact static list, no scroll-driven scaling */
+.no-motion .reveal-project {
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  padding: var(--sp-4) 0;
+}
+
+.no-motion .rp-inner {
+  transform: none;
+}
+
+.no-motion .rp-index,
+.no-motion .rp-meta {
+  opacity: 1;
+}
+
+.no-motion .rp-media {
+  opacity: 0.9;
+  width: min(420px, 70vw);
 }
 
 /* --------------------------------- CTA band --------------------------------- */
