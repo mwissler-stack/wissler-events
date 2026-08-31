@@ -5,6 +5,29 @@
    all-access laminates, timecodes).
    ========================================================================== */
 
+/* Druk Wide Bold — licensed commercial typeface (Commercial Type), self-hosted
+   from assets/fonts/. Note: Druk has no italic cut, so italicized titles
+   render as a browser-synthesized oblique rather than a true italic. */
+@font-face {
+  font-family: "Druk Wide Bold";
+  src: url("../assets/fonts/DrukWideBold.woff2") format("woff2"), url("../assets/fonts/DrukWideBold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Endless — self-hosted from assets/fonts/. Missing a few glyphs (notably
+   the em dash), which is why Inter stays in the --font-body stack right
+   behind it: browsers automatically fall back per-character for anything
+   Endless doesn't cover, so this is a silent, automatic fix. */
+@font-face {
+  font-family: "Endless";
+  src: url("../assets/fonts/endless.woff2") format("woff2"), url("../assets/fonts/endless.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Color */
   --bg: #0a0a0b;
@@ -21,9 +44,9 @@
   --danger: #c9603f;
 
   /* Type */
-  --font-display: "Fraunces", "Times New Roman", serif;
-  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  --font-display: "Druk Wide Bold", "Fraunces", "Times New Roman", serif;
+  --font-body: "Endless", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "Source Code Pro", "SFMono-Regular", Consolas, monospace;
 
   /* Spacing (8px grid) */
   --sp-1: 0.5rem;
@@ -948,7 +971,7 @@ p {
 .rp-card.is-hovering,
 .rp-card:focus,
 .rp-card.is-open {
-  height: 420px;
+  height: 460px;
   padding: 28px clamp(20px, 4vw, 56px);
   z-index: 5;
   box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.55);
