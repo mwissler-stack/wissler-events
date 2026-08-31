@@ -945,7 +945,7 @@ p {
   border-top: none;
 }
 
-.rp-card:hover,
+.rp-card.is-hovering,
 .rp-card:focus,
 .rp-card.is-open {
   height: 420px;
@@ -982,7 +982,7 @@ p {
   transition: opacity 0.25s ease;
 }
 
-.rp-card:hover .rp-collapsed-label,
+.rp-card.is-hovering .rp-collapsed-label,
 .rp-card:focus .rp-collapsed-label,
 .rp-card.is-open .rp-collapsed-label {
   opacity: 0;
@@ -993,7 +993,7 @@ p {
   transition: opacity 0.3s ease 0.08s;
 }
 
-.rp-card:hover .rp-expanded,
+.rp-card.is-hovering .rp-expanded,
 .rp-card:focus .rp-expanded,
 .rp-card.is-open .rp-expanded {
   opacity: 1;
@@ -1097,10 +1097,10 @@ p {
 
 .jump-nav-track {
   display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 10px var(--sp-4);
-  scrollbar-width: thin;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 8px;
+  padding: 12px var(--sp-4);
 }
 
 @media (max-width: 640px) {
@@ -1109,24 +1109,16 @@ p {
   }
 }
 
-.jump-nav-track::-webkit-scrollbar {
-  height: 4px;
-}
-
-.jump-nav-track::-webkit-scrollbar-thumb {
-  background: var(--line-strong);
-  border-radius: 2px;
-}
-
 .jump-nav a {
   flex: 0 0 auto;
   font-family: var(--font-mono);
   font-size: 0.68rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   color: var(--text-faint);
   border: 1px solid var(--line);
   border-radius: 999px;
-  padding: 5px 11px;
+  padding: 5px 12px;
+  white-space: nowrap;
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 

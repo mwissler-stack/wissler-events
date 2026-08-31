@@ -71,52 +71,100 @@
     });
   }
 
-  // Projects page: cards grow on hover/keyboard-focus (CSS handles the
-  // animation itself), and toggle open on click/tap for touch devices where
-  // hover doesn't apply. Scrolling is fully native — nothing here touches it.
-  // Growth is a plain top-anchored real height change (no transform tricks),
-  // which is what makes neighboring rows shift cleanly with no gaps and
-  // keeps hover strictly one-row-at-a-time.
+  // Projects page: cards grow on hover/keyboard-focus/click. Growth is a
+  // plain top-anchored real height change (no transform tricks), so
+  // neighboring rows shift cleanly with no gaps, and hover is JS-controlled
+  // via an .is-hovering class (rather than raw CSS :hover) so it can be
+  // suspended — used by the jump-nav below to stop the scroll from
+  // accidentally popping open rows the cursor happens to pass over.
   if (cards.length) {
     var cardList = Array.prototype.slice.call(cards);
+    var rpList = cardList.map(function (card) {
+      return card.querySelector(".rp-card");
+    });
+    var hoverSuspended = false;
+    var pendingResume = null; // cleanup fn for an in-flight jump, if any
 
-    cardList.forEach(function (card, i) {
-      var rp = card.querySelector(".rp-card");
+    var setActive = function (index, active) {
+      var link = jumpLinks[index];
+      if (link) link.classList.toggle("is-active", active);
+    };
+
+    rpList.forEach(function (rp, i) {
       if (!rp) return;
 
-      var jumpLink = jumpLinks[i];
-      var setActive = function (active) {
-        if (jumpLink) jumpLink.classList.toggle("is-active", active);
-      };
-
       rp.addEventListener("mouseenter", function () {
-        setActive(true);
+        if (hoverSuspended) return;
+        rp.classList.add("is-hovering");
+        setActive(i, true);
       });
       rp.addEventListener("mouseleave", function () {
-        setActive(rp.classList.contains("is-open"));
+        rp.classList.remove("is-hovering");
+        setActive(i, rp.classList.contains("is-open"));
       });
       rp.addEventListener("focus", function () {
-        setActive(true);
+        setActive(i, true);
       });
       rp.addEventListener("blur", function () {
-        setActive(rp.classList.contains("is-open"));
+        setActive(i, rp.classList.contains("is-open"));
       });
       rp.addEventListener("click", function () {
         rp.classList.toggle("is-open");
-        setActive(rp.classList.contains("is-open"));
+        setActive(i, rp.classList.contains("is-open") || rp.classList.contains("is-hovering"));
       });
     });
 
-    // Jump-nav: plain native smooth scroll to bring a project into view.
-    // Hovering/focusing it once scrolled there is what triggers the expand.
-    jumpLinks.forEach(function (link) {
+    // Jump-nav: scroll to the project and force it open immediately (the
+    // cursor is up here in the nav bar, not over the row, so hover alone
+    // wouldn't open it). Hover is suspended everywhere else in the meantime
+    // so the scroll can't accidentally pop open whatever the cursor passes
+    // over, and it resumes once the user actually mouses into the opened
+    // row and back out — with a timeout as a safety net in case they don't.
+    jumpLinks.forEach(function (link, i) {
       link.addEventListener("click", function (e) {
-        var id = link.getAttribute("href").slice(1);
-        var el = document.getElementById(id);
-        if (el) {
-          e.preventDefault();
-          el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+        e.preventDefault();
+        var rp = rpList[i];
+        var el = cardList[i];
+        if (!rp || !el) return;
+
+        if (pendingResume) {
+          pendingResume();
         }
+
+        hoverSuspended = true;
+        rpList.forEach(function (otherRp, j) {
+          if (otherRp && j !== i) {
+            otherRp.classList.remove("is-open", "is-hovering");
+            setActive(j, false);
+          }
+        });
+        rp.classList.add("is-open");
+        setActive(i, true);
+
+        el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+
+        var entered = false;
+        var timeoutId;
+        var resume = function () {
+          rp.classList.remove("is-open");
+          setActive(i, false);
+          hoverSuspended = false;
+          rp.removeEventListener("mouseenter", onEnter);
+          rp.removeEventListener("mouseleave", onLeave);
+          clearTimeout(timeoutId);
+          if (pendingResume === resume) pendingResume = null;
+        };
+        var onEnter = function () {
+          entered = true;
+        };
+        var onLeave = function () {
+          if (entered) resume();
+        };
+
+        rp.addEventListener("mouseenter", onEnter);
+        rp.addEventListener("mouseleave", onLeave);
+        timeoutId = setTimeout(resume, 5000);
+        pendingResume = resume;
       });
     });
   }
