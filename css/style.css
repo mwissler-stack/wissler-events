@@ -945,8 +945,8 @@ p {
 .rp-card:hover,
 .rp-card:focus,
 .rp-card.is-open {
-  height: 720px;
-  padding: 42px clamp(20px, 4vw, 56px);
+  height: 420px;
+  padding: 28px clamp(20px, 4vw, 56px);
 }
 
 .rp-card:focus-visible {
@@ -1005,7 +1005,7 @@ p {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 600;
-  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+  font-size: clamp(1.2rem, 2.4vw, 1.9rem);
   margin: 6px 0 0;
   color: var(--text);
 }
@@ -1024,8 +1024,8 @@ p {
 
 .rp-gallery {
   display: flex;
-  gap: 14px;
-  margin-top: 22px;
+  gap: 12px;
+  margin-top: 14px;
   width: 100%;
   max-width: 1200px;
 }
@@ -1033,7 +1033,7 @@ p {
 .rp-media {
   flex: 1 1 0;
   min-width: 0;
-  height: 400px;
+  height: 220px;
   border-radius: 6px;
   overflow: hidden;
   position: relative;
