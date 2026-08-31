@@ -27,7 +27,11 @@
 </nav>
 
 <nav class="jump-nav" aria-label="Jump to a project">
-  <div class="jump-nav-track">
+  <button class="jump-nav-toggle" aria-expanded="false" aria-controls="jumpNavTrack">
+    Jump to a project
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+  <div class="jump-nav-track" id="jumpNavTrack">
       <a href="#project-01" data-category="production" title="Elements Music Festival" aria-label="Jump to Elements Music Festival">Elements Music Festival</a>
       <a href="#project-02" data-category="production" title="Dorothea Dix Park — 4th of July Celebration" aria-label="Jump to Dorothea Dix Park — 4th of July Celebration">Dorothea Dix Park — 4th of July Celebration</a>
       <a href="#project-03" data-category="production" title="UFC Freedom 250" aria-label="Jump to UFC Freedom 250">UFC Freedom 250</a>

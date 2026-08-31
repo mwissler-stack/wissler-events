@@ -1119,7 +1119,9 @@ img.photo-placeholder {
 
 /* ----------------------------------- Jump nav -------------------------------- */
 /* Sticky "jump to" strip beneath the main nav, for skipping directly to a
-   project rather than scrolling the whole list. */
+   project rather than scrolling the whole list. On mobile it collapses
+   behind a toggle button — 25 wrapped full-name pills is too much sticky
+   real estate on a narrow screen otherwise. */
 
 .jump-nav {
   position: sticky;
@@ -1130,6 +1132,33 @@ img.photo-placeholder {
   border-bottom: 1px solid var(--line);
 }
 
+.jump-nav-toggle {
+  display: none;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 12px var(--sp-3);
+  cursor: pointer;
+}
+
+.jump-nav-toggle svg {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s ease;
+}
+
+.jump-nav-toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
 .jump-nav-track {
   display: flex;
   flex-wrap: wrap;
@@ -1138,9 +1167,24 @@ img.photo-placeholder {
   padding: 12px var(--sp-4);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 760px) {
+  .jump-nav-toggle {
+    display: flex;
+  }
+
   .jump-nav-track {
-    padding: 10px var(--sp-3);
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 var(--sp-3);
+    gap: 6px 8px;
+    transition: max-height 0.25s ease, padding 0.25s ease;
+  }
+
+  .jump-nav-track.is-open {
+    max-height: 55vh;
+    overflow-y: auto;
+    padding: 4px var(--sp-3) 14px;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

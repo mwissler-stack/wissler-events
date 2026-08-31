@@ -22,6 +22,23 @@
     });
   }
 
+  // Jump-nav mobile toggle (collapsed by default on narrow screens; the
+  // wrapped full-name pills eat too much sticky screen space otherwise)
+  var jumpToggle = document.querySelector(".jump-nav-toggle");
+  var jumpTrack = document.querySelector(".jump-nav-track");
+  if (jumpToggle && jumpTrack) {
+    jumpToggle.addEventListener("click", function () {
+      var isOpen = jumpTrack.classList.toggle("is-open");
+      jumpToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+    jumpTrack.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", function () {
+        jumpTrack.classList.remove("is-open");
+        jumpToggle.setAttribute("aria-expanded", "false");
+      });
+    });
+  }
+
   // Scroll reveal (simple fade-in-on-view, used on non-projects pages)
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var revealEls = document.querySelectorAll(".reveal");
