@@ -480,6 +480,17 @@ p {
   position: relative;
 }
 
+picture.photo-placeholder {
+  display: block;
+}
+
+picture.photo-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .photo-placeholder-fill {
   position: absolute;
   inset: 0;
@@ -998,6 +1009,13 @@ img.photo-placeholder {
   box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.55);
 }
 
+/* No-photo entries: shorter expanded height, just enough for the text */
+.rp-card.compact.is-hovering,
+.rp-card.compact:focus,
+.rp-card.compact.is-open {
+  height: 160px;
+}
+
 .rp-card:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
@@ -1086,6 +1104,19 @@ img.photo-placeholder {
   border-radius: 6px;
   overflow: hidden;
   position: relative;
+}
+
+.rp-media picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.rp-media picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .rp-media-fill {
