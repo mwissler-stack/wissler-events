@@ -1102,7 +1102,7 @@ img.photo-placeholder {
 .rp-media {
   flex: 0 0 auto;
   width: auto;
-  height: 220px;
+  height: 260px;
   aspect-ratio: 4 / 3; /* fallback for placeholder tiles without a real photo */
   border-radius: 6px;
   overflow: hidden;
@@ -1111,7 +1111,7 @@ img.photo-placeholder {
 
 @media (max-width: 700px) {
   .rp-media {
-    height: 160px;
+    height: 190px;
   }
 }
 
