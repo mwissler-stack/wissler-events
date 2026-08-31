@@ -1095,15 +1095,24 @@ img.photo-placeholder {
   margin-top: 14px;
   width: 100%;
   max-width: 1200px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .rp-media {
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 0 0 auto;
+  width: auto;
   height: 220px;
+  aspect-ratio: 4 / 3; /* fallback for placeholder tiles without a real photo */
   border-radius: 6px;
   overflow: hidden;
   position: relative;
+}
+
+@media (max-width: 700px) {
+  .rp-media {
+    height: 160px;
+  }
 }
 
 .rp-media picture {
