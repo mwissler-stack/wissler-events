@@ -69,6 +69,7 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 body::before {
@@ -892,15 +893,22 @@ p {
 
 /* ---------------------------- Scroll-reveal projects ------------------------- */
 /* Each project is a pill (search-bar sized) when scrolled past, and grows into
-   a wide, three-image card as it crosses the viewport center. Driven entirely
-   by a --focus custom property (0–1) that JS sets from scroll position — all
-   sizing below is calc() off that one number, so it stays perfectly smooth. */
+   a full-width, three-image card as it crosses the viewport center. Driven
+   entirely by a --focus custom property (0–1) that JS sets from scroll
+   position — all sizing below is calc() off that one number. */
 
 .reveal-list {
   margin-top: var(--sp-2);
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* full-bleed: break out of the .container max-width to reach viewport edges */
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
 }
 
 .reveal-project {
@@ -915,15 +923,19 @@ p {
 
 .rp-card {
   position: relative;
-  width: calc(210px + var(--focus, 0) * 770px);
-  max-width: 94vw;
-  height: calc(48px + var(--focus, 0) * 592px);
+  --rp-w-min: 220px;
+  --rp-w-max: calc(100vw - 48px);
+  --rp-h-min: 52px;
+  --rp-h-max: 700px;
+  width: calc(var(--rp-w-min) + var(--focus, 0) * (var(--rp-w-max) - var(--rp-w-min)));
+  max-width: 98vw;
+  height: calc(var(--rp-h-min) + var(--focus, 0) * (var(--rp-h-max) - var(--rp-h-min)));
   border-radius: calc(999px - var(--focus, 0) * 984px);
   background: var(--bg-elevated);
   border: 1px solid var(--line-strong);
   overflow: hidden;
-  margin: 9px 0;
-  padding: 0 calc(18px + var(--focus, 0) * 22px);
+  margin: 16px 0;
+  padding: calc(14px + var(--focus, 0) * 28px) calc(18px + var(--focus, 0) * 30px);
   transition: width 0.14s ease-out, height 0.14s ease-out, border-radius 0.14s ease-out, padding 0.14s ease-out;
 }
 
@@ -964,14 +976,14 @@ p {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 600;
-  font-size: clamp(1.4rem, 3vw, 2.1rem);
+  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
   margin: 6px 0 0;
   color: var(--text);
 }
 
 .rp-meta {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   letter-spacing: 0.03em;
   color: var(--text-muted);
   margin-top: 8px;
@@ -983,15 +995,16 @@ p {
 
 .rp-gallery {
   display: flex;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 14px;
+  margin-top: 22px;
   width: 100%;
-  max-width: 720px;
+  max-width: 1200px;
 }
 
 .rp-media {
   flex: 1 1 0;
-  aspect-ratio: 4 / 3;
+  min-width: 0;
+  height: calc(var(--focus, 0) * 400px);
   border-radius: 6px;
   overflow: hidden;
   position: relative;
@@ -1053,6 +1066,74 @@ p {
 
 .no-motion .rp-media-fill {
   opacity: 1;
+}
+
+.no-motion .rp-media {
+  height: 220px;
+}
+
+/* ----------------------------------- Jump nav -------------------------------- */
+/* Sticky "jump to" strip beneath the main nav, for skipping directly to a
+   project rather than scrolling the whole list. */
+
+.jump-nav {
+  position: sticky;
+  top: 72px;
+  z-index: 40;
+  background: rgba(10, 10, 11, 0.88);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+.jump-nav-track {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 10px var(--sp-4);
+  scrollbar-width: thin;
+}
+
+@media (max-width: 640px) {
+  .jump-nav-track {
+    padding: 10px var(--sp-3);
+  }
+}
+
+.jump-nav-track::-webkit-scrollbar {
+  height: 4px;
+}
+
+.jump-nav-track::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 2px;
+}
+
+.jump-nav a {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 11px;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.jump-nav a:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+.jump-nav a.is-active {
+  color: #0a0a0b;
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.jump-nav a.is-hidden {
+  display: none;
 }
 
 /* --------------------------------- CTA band --------------------------------- */

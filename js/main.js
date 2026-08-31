@@ -1,5 +1,6 @@
 // Matthew Wissler — Event Production Portfolio
-// Shared behavior: mobile nav, scroll reveal, projects filter tabs.
+// Shared behavior: mobile nav, scroll reveal, projects filter tabs, and (on the
+// Projects page) a damped "gravity well" scroll engine plus jump-nav.
 
 (function () {
   "use strict";
@@ -20,7 +21,7 @@
     });
   }
 
-  // Scroll reveal
+  // Scroll reveal (simple fade-in-on-view, used on non-projects pages)
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var revealEls = document.querySelectorAll(".reveal");
   if (reduceMotion || !("IntersectionObserver" in window)) {
@@ -44,9 +45,11 @@
     });
   }
 
-  // Projects filter tabs
+  // Projects filter tabs (also hides/shows matching jump-nav links)
   var tabs = document.querySelectorAll(".tab[data-filter]");
   var cards = document.querySelectorAll(".reveal-project[data-category]");
+  var jumpLinks = document.querySelectorAll(".jump-nav a[data-category]");
+
   if (tabs.length && cards.length) {
     tabs.forEach(function (tab) {
       tab.addEventListener("click", function () {
@@ -59,28 +62,47 @@
           var match = filter === "all" || card.getAttribute("data-category") === filter;
           card.classList.toggle("is-hidden", !match);
         });
+        jumpLinks.forEach(function (link) {
+          var match = filter === "all" || link.getAttribute("data-category") === filter;
+          link.classList.toggle("is-hidden", !match);
+        });
       });
     });
   }
 
-  // Scroll-driven grow/shrink/reveal for project cards on the Projects page
+  // Scroll-driven grow/shrink/reveal, damped scroll, and jump-nav for the
+  // Projects page only.
   if (cards.length) {
     if (reduceMotion) {
       document.body.classList.add("no-motion");
+      // Jump-nav still works for reduced-motion users, via plain native scroll.
+      jumpLinks.forEach(function (link) {
+        link.addEventListener("click", function (e) {
+          var id = link.getAttribute("href").slice(1);
+          var el = document.getElementById(id);
+          if (el) {
+            e.preventDefault();
+            el.scrollIntoView({ behavior: "auto", block: "center" });
+          }
+        });
+      });
     } else {
       var cardList = Array.prototype.slice.call(cards);
 
-      var updateFocus = function () {
+      // Reads every card's position and writes a --focus value (0–1) that
+      // CSS uses for size, opacity, and border-radius. Returns the highest
+      // focus value found, used to drive scroll damping and jump-nav state.
+      var computeFocus = function () {
         var vh = window.innerHeight;
         var center = vh / 2;
-        var threshold = vh * 0.42;
+        var threshold = vh * 0.48;
+        var maxFocus = 0;
+        var maxIndex = -1;
 
-        // Read phase: measure all cards first to avoid layout thrashing.
         var rects = cardList.map(function (card) {
           return card.getBoundingClientRect();
         });
 
-        // Write phase: apply the computed focus value to each card.
         rects.forEach(function (rect, i) {
           var cardCenter = rect.top + rect.height / 2;
           var dist = Math.abs(cardCenter - center);
@@ -89,23 +111,103 @@
           var card = cardList[i];
           card.style.setProperty("--focus", eased.toFixed(3));
           card.classList.toggle("is-focused", eased > 0.55);
+          if (eased > maxFocus) {
+            maxFocus = eased;
+            maxIndex = i;
+          }
         });
+
+        if (jumpLinks.length) {
+          jumpLinks.forEach(function (link, i) {
+            link.classList.toggle("is-active", i === maxIndex && maxFocus > 0.4);
+          });
+        }
+
+        return maxFocus;
       };
 
-      var scheduled = false;
-      var onScroll = function () {
-        if (!scheduled) {
-          scheduled = true;
-          requestAnimationFrame(function () {
-            updateFocus();
-            scheduled = false;
-          });
+      // Damped "gravity well" scroll: mouse wheel / trackpad input moves a
+      // virtual target that `current` eases toward every frame. Movement is
+      // slowed overall, and slowed further while a project is actively open,
+      // so the blow-up has time to play out instead of flashing past.
+      var current = window.scrollY;
+      var target = window.scrollY;
+      var ticking = false;
+      var programmatic = false;
+      var BASE_SPEED = 0.55; // overall slow-down factor on wheel input
+      var EASE = 0.14; // how quickly `current` chases `target` each frame
+
+      var maxScroll = function () {
+        return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      };
+
+      var tick = function () {
+        current += (target - current) * EASE;
+        if (Math.abs(target - current) < 0.4) {
+          current = target;
+        }
+        programmatic = true;
+        window.scrollTo(0, current);
+        computeFocus();
+        if (current !== target) {
+          requestAnimationFrame(tick);
+        } else {
+          ticking = false;
         }
       };
 
-      window.addEventListener("scroll", onScroll, { passive: true });
-      window.addEventListener("resize", onScroll);
-      updateFocus();
+      window.addEventListener(
+        "wheel",
+        function (e) {
+          e.preventDefault();
+          var maxFocus = computeFocus();
+          var dynamicFactor = 1 - maxFocus * 0.72; // extra slow-down near an open card
+          target += e.deltaY * BASE_SPEED * dynamicFactor;
+          target = Math.max(0, Math.min(maxScroll(), target));
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(tick);
+          }
+        },
+        { passive: false }
+      );
+
+      // Keyboard scrolling and scrollbar dragging stay native (full speed,
+      // fully accessible) — resync our virtual position whenever a scroll
+      // happens that our own tick() didn't cause.
+      window.addEventListener(
+        "scroll",
+        function () {
+          if (!programmatic) {
+            current = window.scrollY;
+            target = window.scrollY;
+          }
+          programmatic = false;
+        },
+        { passive: true }
+      );
+
+      window.addEventListener("resize", computeFocus);
+
+      // Jump-nav: ease to the chosen project using the same animation engine
+      // as wheel scrolling, so the motion feels consistent either way.
+      jumpLinks.forEach(function (link) {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          var id = link.getAttribute("href").slice(1);
+          var el = document.getElementById(id);
+          if (!el) return;
+          var rect = el.getBoundingClientRect();
+          var destination = window.scrollY + rect.top + rect.height / 2 - window.innerHeight / 2;
+          target = Math.max(0, Math.min(maxScroll(), destination));
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(tick);
+          }
+        });
+      });
+
+      computeFocus();
     }
   }
 })();
