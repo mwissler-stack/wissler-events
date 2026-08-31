@@ -71,12 +71,15 @@
     });
   }
 
-  // Projects page: cards grow on hover/keyboard-focus/click. Growth is a
-  // plain top-anchored real height change (no transform tricks), so
-  // neighboring rows shift cleanly with no gaps, and hover is JS-controlled
-  // via an .is-hovering class (rather than raw CSS :hover) so it can be
-  // suspended — used by the jump-nav below to stop the scroll from
-  // accidentally popping open rows the cursor happens to pass over.
+  // Projects page: cards grow on hover/keyboard-focus on devices that
+  // actually support hover (desktop/trackpad), and toggle open on click/tap
+  // everywhere — which on touch devices (no real hover) makes the whole list
+  // behave as a plain tap-to-expand/collapse accordion. Growth is a plain
+  // top-anchored real height change (no transform tricks), so neighboring
+  // rows shift cleanly with no gaps. Hover is JS-controlled via an
+  // .is-hovering class (rather than raw CSS :hover) so it can be suspended —
+  // used by the jump-nav below to stop the scroll from accidentally popping
+  // open rows the cursor happens to pass over.
   if (cards.length) {
     var cardList = Array.prototype.slice.call(cards);
     var rpList = cardList.map(function (card) {
@@ -84,6 +87,7 @@
     });
     var hoverSuspended = false;
     var pendingResume = null; // cleanup fn for an in-flight jump, if any
+    var supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
     var setActive = function (index, active) {
       var link = jumpLinks[index];
@@ -93,15 +97,17 @@
     rpList.forEach(function (rp, i) {
       if (!rp) return;
 
-      rp.addEventListener("mouseenter", function () {
-        if (hoverSuspended) return;
-        rp.classList.add("is-hovering");
-        setActive(i, true);
-      });
-      rp.addEventListener("mouseleave", function () {
-        rp.classList.remove("is-hovering");
-        setActive(i, rp.classList.contains("is-open"));
-      });
+      if (supportsHover) {
+        rp.addEventListener("mouseenter", function () {
+          if (hoverSuspended) return;
+          rp.classList.add("is-hovering");
+          setActive(i, true);
+        });
+        rp.addEventListener("mouseleave", function () {
+          rp.classList.remove("is-hovering");
+          setActive(i, rp.classList.contains("is-open"));
+        });
+      }
       rp.addEventListener("focus", function () {
         setActive(i, true);
       });

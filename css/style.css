@@ -194,11 +194,6 @@ p {
   letter-spacing: 0.01em;
 }
 
-.nav-brand span {
-  font-style: normal;
-  color: inherit;
-}
-
 .nav-links {
   display: flex;
   align-items: center;
@@ -458,6 +453,42 @@ p {
   z-index: 1;
   justify-content: center;
   margin-top: var(--sp-5);
+}
+
+/* ------------------------------- Photo placeholder --------------------------- */
+/* Stand-in for a real photo on the Contact page. Swap the containing div for
+   an <img class="photo-placeholder"> and this sizing/border/radius still
+   applies cleanly — just drop the fill div. */
+
+.photo-placeholder {
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 4 / 5;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  position: relative;
+}
+
+.photo-placeholder-fill {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 30% 25%, var(--accent-soft), transparent 60%), linear-gradient(160deg, var(--bg-elevated-2), var(--bg-elevated));
+  color: var(--text-faint);
+}
+
+.photo-placeholder-fill svg {
+  width: 44px;
+  height: 44px;
+  opacity: 0.45;
+}
+
+img.photo-placeholder {
+  object-fit: cover;
 }
 
 /* ---------------------------- Credential badge ---------------------------- */
