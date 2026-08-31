@@ -126,29 +126,37 @@
         return maxFocus;
       };
 
-      // Damped "gravity well" scroll: mouse wheel / trackpad input moves a
-      // virtual target that `current` eases toward every frame. Movement is
-      // slowed overall, and slowed further while a project is actively open,
-      // so the blow-up has time to play out instead of flashing past.
+      // Damped "gravity well" scroll: mouse wheel / trackpad input pushes a
+      // target position, but `current` is only ever allowed to move toward
+      // it at a capped speed (px/frame) — not a proportional spring. That's
+      // the fix for fast scrolling "rocketing" past a card without it ever
+      // opening: no matter how far ahead `target` gets, `current` still has
+      // to physically travel through every card's focus zone at a bounded
+      // speed, and that speed drops further while a card is actively open.
       var current = window.scrollY;
       var target = window.scrollY;
       var ticking = false;
       var programmatic = false;
-      var BASE_SPEED = 0.55; // overall slow-down factor on wheel input
-      var EASE = 0.14; // how quickly `current` chases `target` each frame
+      var lastMaxFocus = 0;
+      var BASE_SPEED = 0.55; // how much of each wheel tick reaches the target
+      var MAX_STEP = 10; // px per frame ceiling under normal conditions
+      var MIN_STEP = 1.2; // px per frame floor, so it still reaches target
 
       var maxScroll = function () {
         return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
       };
 
       var tick = function () {
-        current += (target - current) * EASE;
-        if (Math.abs(target - current) < 0.4) {
+        var ceiling = Math.max(MIN_STEP, MAX_STEP * (1 - lastMaxFocus * 0.75));
+        var diff = target - current;
+        var step = Math.sign(diff) * Math.min(Math.abs(diff), ceiling);
+        current += step;
+        if (Math.abs(target - current) < 0.5) {
           current = target;
         }
         programmatic = true;
         window.scrollTo(0, current);
-        computeFocus();
+        lastMaxFocus = computeFocus();
         if (current !== target) {
           requestAnimationFrame(tick);
         } else {
@@ -160,9 +168,7 @@
         "wheel",
         function (e) {
           e.preventDefault();
-          var maxFocus = computeFocus();
-          var dynamicFactor = 1 - maxFocus * 0.72; // extra slow-down near an open card
-          target += e.deltaY * BASE_SPEED * dynamicFactor;
+          target += e.deltaY * BASE_SPEED;
           target = Math.max(0, Math.min(maxScroll(), target));
           if (!ticking) {
             ticking = true;
