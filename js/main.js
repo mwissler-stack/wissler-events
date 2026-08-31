@@ -77,6 +77,13 @@
   if (cards.length) {
     var cardList = Array.prototype.slice.call(cards);
 
+    // Must match the collapsed/expanded heights set in the CSS (.rp-card and
+    // .rp-card:hover) so the anchor math lines up with what actually renders.
+    var COLLAPSED_H = 64;
+    var EXPANDED_H = 420;
+    var DELTA_H = EXPANDED_H - COLLAPSED_H;
+    var DAMPING = 0.82; // <1 softens overlap into the row above at extreme edges
+
     cardList.forEach(function (card, i) {
       var rp = card.querySelector(".rp-card");
       if (!rp) return;
@@ -86,19 +93,43 @@
         if (jumpLink) jumpLink.classList.toggle("is-active", active);
       };
 
-      rp.addEventListener("mouseenter", function () {
+      // Where the pointer entered (0 = top of the row, 1 = bottom) becomes
+      // the point the row grows from: translate it up by the share of the
+      // height increase that lies above that point, so that point stays put.
+      var anchorFromClientY = function (clientY) {
+        var rect = rp.getBoundingClientRect();
+        var relY = rect.height > 0 ? (clientY - rect.top) / rect.height : 0.5;
+        relY = Math.max(0, Math.min(1, relY));
+        rp.style.setProperty("--anchor-shift", (-relY * DELTA_H * DAMPING).toFixed(1) + "px");
+      };
+
+      var resetAnchor = function () {
+        if (!rp.classList.contains("is-open")) {
+          rp.style.setProperty("--anchor-shift", "0px");
+        }
+      };
+
+      rp.addEventListener("mouseenter", function (e) {
+        anchorFromClientY(e.clientY);
         setActive(true);
       });
       rp.addEventListener("mouseleave", function () {
+        resetAnchor();
         setActive(rp.classList.contains("is-open"));
       });
       rp.addEventListener("focus", function () {
+        // No pointer position on keyboard focus — grow evenly from center.
+        rp.style.setProperty("--anchor-shift", (-0.5 * DELTA_H * DAMPING).toFixed(1) + "px");
         setActive(true);
       });
       rp.addEventListener("blur", function () {
+        resetAnchor();
         setActive(rp.classList.contains("is-open"));
       });
-      rp.addEventListener("click", function () {
+      rp.addEventListener("click", function (e) {
+        if (typeof e.clientY === "number") {
+          anchorFromClientY(e.clientY);
+        }
         rp.classList.toggle("is-open");
         setActive(rp.classList.contains("is-open"));
       });

@@ -935,7 +935,12 @@ p {
   padding: 14px clamp(20px, 4vw, 56px);
   cursor: pointer;
   outline: none;
-  transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1), padding 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  --anchor-shift: 0px;
+  transform: translateY(var(--anchor-shift));
+  box-shadow: none;
+  z-index: 1;
+  transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1), padding 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
 }
 
 .reveal-project + .reveal-project .rp-card {
@@ -947,6 +952,8 @@ p {
 .rp-card.is-open {
   height: 420px;
   padding: 28px clamp(20px, 4vw, 56px);
+  z-index: 5;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.55);
 }
 
 .rp-card:focus-visible {
