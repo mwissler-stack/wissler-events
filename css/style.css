@@ -195,8 +195,8 @@ p {
 }
 
 .nav-brand span {
-  font-style: italic;
-  color: var(--accent);
+  font-style: normal;
+  color: inherit;
 }
 
 .nav-links {
@@ -426,23 +426,11 @@ p {
   pointer-events: none;
 }
 
-.home-hero .eyebrow {
-  position: relative;
-  z-index: 1;
-  justify-content: center;
-}
-
 .home-title {
   position: relative;
   z-index: 1;
   font-size: clamp(2.8rem, 8vw, 5.6rem);
   margin: var(--sp-3) 0 0;
-}
-
-.home-title em {
-  color: var(--text);
-  font-style: italic;
-  font-weight: 500;
 }
 
 .home-subtitle {
@@ -455,19 +443,21 @@ p {
   margin-top: var(--sp-3);
 }
 
-.home-tagline {
-  position: relative;
-  z-index: 1;
-  margin: var(--sp-4) auto var(--sp-5);
-  max-width: 44ch;
+.home-location {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: clamp(0.65rem, 1.3vw, 0.8rem);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
   color: var(--text-muted);
-  font-size: 1rem;
+  margin-top: var(--sp-2);
 }
 
 .home-hero .btn-row {
   position: relative;
   z-index: 1;
   justify-content: center;
+  margin-top: var(--sp-5);
 }
 
 /* ---------------------------- Credential badge ---------------------------- */
@@ -698,7 +688,7 @@ p {
 .rundown::before {
   content: "";
   position: absolute;
-  left: 84px;
+  left: 150px;
   top: 8px;
   bottom: 8px;
   width: 1px;
@@ -714,7 +704,7 @@ p {
 .cue {
   position: relative;
   display: grid;
-  grid-template-columns: 84px 1fr;
+  grid-template-columns: 150px 1fr;
   gap: var(--sp-4);
   padding: var(--sp-5) 0;
   border-bottom: 1px solid var(--line);
@@ -742,13 +732,14 @@ p {
 
 .cue-marker .cue-id {
   color: var(--accent);
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .cue-marker .cue-dot {
   position: absolute;
-  left: 79px;
+  left: 145px;
   top: 4px;
   width: 9px;
   height: 9px;
@@ -772,16 +763,6 @@ p {
   font-size: 0.78rem;
   color: var(--text-muted);
   margin-top: 2px;
-}
-
-.cue-date {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--text-faint);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-top: 6px;
-  display: inline-block;
 }
 
 .cue-bullets {
