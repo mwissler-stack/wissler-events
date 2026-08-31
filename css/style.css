@@ -935,12 +935,10 @@ p {
   padding: 14px clamp(20px, 4vw, 56px);
   cursor: pointer;
   outline: none;
-  --anchor-shift: 0px;
-  transform: translateY(var(--anchor-shift));
   box-shadow: none;
   z-index: 1;
   transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1), padding 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+    box-shadow 0.4s ease;
 }
 
 .reveal-project + .reveal-project .rp-card {
