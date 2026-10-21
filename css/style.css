@@ -445,8 +445,9 @@ p {
   margin: var(--sp-3) 0 0;
 }
 
-/* Home title: Druk Wide outlines that draw in on load and stay as an outline.
-   Fully visible by default; the animation only plays the intro on top of that. */
+/* Home title: Druk Wide outlines draw in on load, then fill solid and the
+   stroke fades out. Fully filled by default; the animation only plays the
+   intro on top of that. */
 .home-title {
   line-height: 1;
   --lit1: var(--text);
@@ -458,17 +459,22 @@ p {
 }
 .hn-stack { display: block; position: relative; width: clamp(15rem, 44vw, 30rem); max-width: 100%; margin: 0 auto; }
 .hero-svg { display: block; width: 100%; height: auto; overflow: visible; }
-.hero-svg path { fill: none; }
 .hero-svg .o {
   --k: calc(var(--l) * .4s + var(--i) * .08s);
-  stroke: var(--lit1); stroke-width: 22; stroke-linejoin: round;
+  fill: var(--lit1); fill-opacity: 0;
+  stroke: var(--lit1); stroke-width: 16; stroke-linejoin: round;
   stroke-dasharray: 1; stroke-dashoffset: 1;
-  animation: hn-draw .9s cubic-bezier(.5,0,.2,1) calc(.3s + var(--k)) forwards;
+  animation:
+    hn-draw .9s cubic-bezier(.5,0,.2,1) calc(.3s + var(--k)) forwards,
+    hn-fill .7s ease 2.1s forwards,
+    hn-unstroke .6s ease 2.5s forwards;
 }
-.hero-svg .ln2 .o { stroke: var(--lit2); }
+.hero-svg .ln2 .o { fill: var(--lit2); stroke: var(--lit2); }
 @keyframes hn-draw { to { stroke-dashoffset: 0; } }
+@keyframes hn-fill { to { fill-opacity: 1; } }
+@keyframes hn-unstroke { to { stroke-opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .hero-svg .o { animation: none; stroke-dashoffset: 0; }
+  .hero-svg .o { animation: none; stroke-opacity: 0; fill-opacity: 1; }
 }
 
 .home-subtitle {
