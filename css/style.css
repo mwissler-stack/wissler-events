@@ -245,6 +245,10 @@ p {
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
+.nav-links a.nav-cta {
+  padding: 9px 18px;
+}
+
 .nav-cta:hover {
   border-color: var(--text);
   background: rgba(244, 242, 237, 0.08);
@@ -292,6 +296,10 @@ p {
   }
   .nav-cta {
     margin-top: var(--sp-2);
+  }
+  .nav-links a.nav-cta {
+    padding: 12px 18px;
+    width: auto;
   }
   .nav-toggle {
     display: inline-flex;
@@ -435,6 +443,66 @@ p {
   z-index: 1;
   font-size: clamp(2.8rem, 8vw, 5.6rem);
   margin: var(--sp-3) 0 0;
+}
+
+/* Home title: outline draw, fill, then spotlight sweep (Druk Wide outlines),
+   same effect as the name on wisslerstudios.com. Fully lit by default; the
+   animations only play the intro on top of that. */
+.home-title {
+  line-height: 1;
+  --lit1: var(--text);
+  --lit2: rgba(244, 242, 237, 0.65);
+  --dim: rgba(244, 242, 237, 0.12);
+}
+.home-title .sr {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+.hn-stack { display: block; position: relative; width: clamp(15rem, 44vw, 30rem); max-width: 100%; margin: 0 auto; }
+.hero-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.hero-svg path { fill: none; }
+.hero-svg .o { --k: calc(var(--l) * .4s + var(--i) * .08s); }
+.hero-svg .o { stroke: var(--lit1); stroke-width: 16; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: hn-draw .9s cubic-bezier(.5,0,.2,1) calc(.3s + var(--k)) forwards, hn-unstroke .6s ease 2.9s forwards; }
+.hero-svg .ln2 .o { stroke: var(--lit2); }
+.hero-svg .d { fill: var(--dim); opacity: 0; animation: hn-fade .7s ease 2.2s forwards; }
+.hero-svg .l { fill: var(--lit1); }
+.hero-svg .ln2 .l { fill: var(--lit2); }
+.hero-svg .b { fill: #fff; }
+.hn-lit, .hn-beam { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; }
+.hn-mask {
+  display: block; width: 100%; height: 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-size: 400% 100%; mask-size: 400% 100%;
+  -webkit-mask-position: -5% 0; mask-position: -5% 0;
+}
+.hn-lit {
+  -webkit-mask-position: 0% 0; mask-position: 0% 0;
+  animation: hn-sweep-lit 1.6s cubic-bezier(.45,.05,.3,1) 2.9s backwards;
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 25%, transparent 28.75%);
+  mask-image: linear-gradient(90deg, #000 0, #000 25%, transparent 28.75%);
+}
+.hn-band {
+  animation: hn-sweep-band 1.6s cubic-bezier(.45,.05,.3,1) 2.9s backwards;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, transparent 21.4%, #000 26.9%, transparent 32.4%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, transparent 21.4%, #000 26.9%, transparent 32.4%, transparent 100%);
+}
+.hn-beam { filter: drop-shadow(0 0 14px rgba(255,255,255,.75)) drop-shadow(0 0 40px rgba(255,255,255,.35)); }
+@keyframes hn-draw { to { stroke-dashoffset: 0; } }
+@keyframes hn-unstroke { to { stroke-opacity: 0; } }
+@keyframes hn-fade { to { opacity: 1; } }
+@keyframes hn-sweep-lit {
+  from { -webkit-mask-position: 44% 0; mask-position: 44% 0; }
+  to { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
+}
+@keyframes hn-sweep-band {
+  from { -webkit-mask-position: 44% 0; mask-position: 44% 0; }
+  to { -webkit-mask-position: -5% 0; mask-position: -5% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-svg .o { animation: none; stroke-opacity: 0; }
+  .hero-svg .d, .hn-beam { display: none; }
+  .hn-lit, .hn-band { animation: none; }
 }
 
 .home-subtitle {
